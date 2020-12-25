@@ -1,4 +1,4 @@
-export default function Index({ repos, updatedAt }) {
+export default function Index({ result, updatedAt }) {
   return (
     <React.Fragment>
       <h1>
@@ -6,7 +6,7 @@ export default function Index({ repos, updatedAt }) {
       </h1>
       <h2>Github public repositories. Updated at {updatedAt}</h2>
       <ul>
-        {(repos || []).map((repo) => (
+        {(result.items || []).map((repo) => (
           <li><a href={repo.html_url} target="_blank" rel="noopener">{repo.full_name}</a></li>
         ))}
       </ul>
@@ -15,18 +15,18 @@ export default function Index({ repos, updatedAt }) {
 }
 
 export async function getEdgeProps() {
-  const response = await fetch('https://api.github.com/repositories', {
+  const response = await fetch('https://api.github.com/search/repositories?q=javascript&sort=updated', {
     headers: {'user-agent': 'flareact-app'}
   });
   const date = new Date();
-  const repos = await response.json();
+  const result = await response.json();
 
   return {
     props: {
-      repos,
+      result,
       updatedAt: date.toISOString(),
     },
-    // Revalidate these props once every 60 seconds
+    // Revalidate these props once every 30 seconds
     revalidate: 30,
   };
 }
